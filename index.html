@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="VoxAfford: Multi-Scale Voxel-Token Fusion for Open-Vocabulary 3D Affordance Detection. CoRL 2026, Xi'an Jiaotong University.">
+  <meta name="repository" content="https://github.com/voxafford/voxafford">
+  <meta property="og:title" content="VoxAfford | CoRL 2026">
+  <meta property="og:description" content="Multi-scale voxel-token fusion for open-vocabulary 3D affordance detection.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/framework.webp">
+  <title>VoxAfford | CoRL 2026</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" id="top">
+    <a class="site-name" href="#top">VoxAfford</a>
+    <nav aria-label="Main navigation">
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#robot">Robot</a>
+      <a href="#citation">Citation</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="paper-header" aria-labelledby="paper-title">
+      <p class="venue">Conference on Robot Learning · 2026</p>
+      <h1 id="paper-title">VoxAfford: Multi-Scale Voxel-Token Fusion for Open-Vocabulary 3D Affordance Detection</h1>
+      <p class="authors">Haowen Sun, Shaolong Zhang, Mingyang Li, Chengzhong Ma,<br class="desktop-break">
+        Xinzhe Chen, Qiongjie Cui, Xingyu Chen, Zeyang Liu<sup>*</sup>, Xuguang Lan<sup>*</sup></p>
+      <p class="affiliation">Xi'an Jiaotong University</p>
+      <p class="lab-name">National Key Laboratory of Human-Machine Hybrid Augmented Intelligence<br>
+        Institute of Artificial Intelligence and Robotics</p>
+      <div class="paper-links">
+        <a class="button primary" href="assets/voxafford-paper.pdf" target="_blank" rel="noopener">Paper PDF</a>
+        <a class="button" href="#citation">BibTeX</a>
+        <a class="button repository-link" href="#" hidden target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </section>
+
+    <figure class="overview">
+      <a href="assets/overview.webp" data-lightbox data-title="Affordance prediction for robotic manipulation" aria-label="Enlarge the affordance prediction overview">
+        <img src="assets/overview.webp" alt="A point-cloud observation and manipulation pipeline comparing language tokens with voxel-enhanced affordance tokens." width="2400" height="1727" fetchpriority="high">
+      </a>
+      <figcaption>VoxAfford combines language-model semantics with multi-scale voxel geometry to locate interaction regions in 3D.</figcaption>
+    </figure>
+
+    <section aria-labelledby="abstract-title">
+      <h2 id="abstract-title">Abstract</h2>
+      <p>Open-vocabulary 3D affordance detection localizes the regions of an object that support a language-described interaction. Language-model output tokens provide affordance semantics, while accurate masks also depend on spatial structure.</p>
+      <p>VoxAfford retrieves complementary geometric features from a frozen 3D VQVAE at three resolutions. Cross-attention and a learned scalar compatibility gate enhance each generated affordance token. Query-conditioned aggregation forms a spatially aware prompt, which works alongside point features to predict the final mask.</p>
+      <p><a href="assets/voxafford-paper.pdf#page=1" target="_blank" rel="noopener">Read the full abstract in the paper.</a></p>
+    </section>
+
+    <section id="method" aria-labelledby="method-title">
+      <h2 id="method-title">Method</h2>
+      <p>The point cloud and language query enter a LoRA-adapted LLM, which generates three affordance tokens. Each token retrieves geometry from its paired VQVAE scale (16<sup>3</sup>, 32<sup>3</sup>, or 64<sup>3</sup>). A scalar compatibility gate controls the geometric injection. A semantic query then aggregates the enhanced tokens into a prompt for mask prediction.</p>
+      <figure>
+        <a href="assets/framework.webp" data-lightbox data-title="VoxAfford framework" aria-label="Enlarge the VoxAfford framework diagram">
+          <img src="assets/framework.webp" alt="VoxAfford's three components: multimodal input encoding, hierarchical voxel-token spatial fusion, and affordance-aware spatial propagation." width="2400" height="715" loading="lazy">
+        </a>
+        <figcaption>The frozen voxel encoder supplies geometry; the LLM supplies affordance semantics.</figcaption>
+      </figure>
+    </section>
+
+    <section id="results" aria-labelledby="results-title">
+      <h2 id="results-title">Results</h2>
+      <p>OpenAD open-set evaluation with full-object point clouds and partial observations. All values below are instance-level metrics in percent; higher is better.</p>
+      <div class="view-tabs" role="tablist" aria-label="Observation setting">
+        <button id="full-tab" type="button" role="tab" aria-selected="true" aria-controls="benchmark-panel" data-view="full">Full view</button>
+        <button id="partial-tab" type="button" role="tab" aria-selected="false" aria-controls="benchmark-panel" tabindex="-1" data-view="partial">Partial view</button>
+      </div>
+      <div id="benchmark-panel" role="tabpanel" aria-labelledby="full-tab" tabindex="0">
+        <div class="table-scroll">
+          <table>
+            <caption class="sr-only" id="benchmark-caption">Full-view instance-level metrics, percentages</caption>
+            <thead><tr><th scope="col">Method</th><th scope="col">mIoU ↑</th><th scope="col">mAcc ↑</th><th scope="col">mAP<sub>50</sub> ↑</th></tr></thead>
+            <tbody id="results-body">
+              <tr><th scope="row">3D-ADLLM</th><td>30.28</td><td>70.66</td><td>27.80</td></tr>
+              <tr><th scope="row">3D-ADLLM<sup>†</sup></th><td>32.60</td><td>73.21</td><td>35.13</td></tr>
+              <tr class="ours"><th scope="row">VoxAfford</th><td>40.57</td><td>77.68</td><td>40.67</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="note"><sup>†</sup> Matched pretraining: PartNet segmentation pretraining and ShapeLLM-Omni VQVAE features at the LLM input. Values are from Table 1 of the paper.</p>
+      <span class="sr-only" id="results-status" role="status" aria-live="polite"></span>
+      <h3>Qualitative comparisons</h3>
+      <figure>
+        <a href="assets/qualitative.webp" data-lightbox data-title="Qualitative affordance detection results" aria-label="Enlarge the qualitative comparison">
+          <img src="assets/qualitative.webp" alt="Point-cloud affordance predictions from OpenAD, LASO, 3D-ADLLM, VoxAfford, and ground-truth annotations across multiple objects." width="2400" height="1486" loading="lazy">
+        </a>
+        <figcaption>Open-set examples from Figure 3. Click any figure to enlarge it.</figcaption>
+      </figure>
+    </section>
+
+    <section id="robot" aria-labelledby="robot-title">
+      <h2 id="robot-title">Real robot experiments</h2>
+      <p>VoxAfford succeeds in 33 of 50 trials (66%) across five novel objects. A Franka Research 3 arm and three Orbbec Femto Bolt RGB-D cameras provide the manipulation platform and scene point clouds.</p>
+      <figure>
+        <a href="assets/robot.webp" data-lightbox data-title="Real-robot manipulation sequences" aria-label="Enlarge the robot manipulation sequences">
+          <img src="assets/robot.webp" alt="Two real-robot sequences: grasping and lifting a banana while avoiding a carrot, and grasping a ladle and transferring it into a red bowl." width="2400" height="901" loading="lazy">
+        </a>
+        <figcaption>Representative trials from Figure 5: banana grasping and ladle manipulation.</figcaption>
+      </figure>
+      <p>Camera viewpoints and extrinsics remain fixed. Object pose, robot initial state, and clutter vary across trials. Both methods use paired scenes and the same execution pipeline.</p>
+      <div class="table-scroll">
+        <table>
+          <caption>Successful trials</caption>
+          <thead><tr><th scope="col">Object</th><th scope="col">3D-ADLLM</th><th scope="col">VoxAfford</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Cup with handle</th><td>5 / 10</td><td>8 / 10</td></tr>
+            <tr><th scope="row">Cup without handle</th><td>0 / 10</td><td>5 / 10</td></tr>
+            <tr><th scope="row">Fruits</th><td>6 / 10</td><td>6 / 10</td></tr>
+            <tr><th scope="row">Ladle</th><td>5 / 10</td><td>5 / 10</td></tr>
+            <tr><th scope="row">Pan</th><td>2 / 10</td><td>9 / 10</td></tr>
+            <tr class="total-row"><th scope="row">Overall</th><td>18 / 50</td><td>33 / 50</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <details>
+        <summary>Evaluation scope and limitations</summary>
+        <p>VoxAfford relies on a frozen pre-trained VQVAE and fixed token–scale retrieval pairing. Evaluation focuses on isolated objects and one robot platform. Noisy or partial observations, segmentation, calibration, and reconstruction errors can affect localization and execution. See the paper for the full protocol and failure analysis.</p>
+      </details>
+    </section>
+
+    <section id="citation" aria-labelledby="citation-title">
+      <div class="citation-heading">
+        <h2 id="citation-title">Citation</h2>
+        <button class="button" id="copy-citation" type="button">Copy BibTeX</button>
+      </div>
+      <pre><code id="bibtex">@inproceedings{sun2026voxafford,
+  title     = {{VoxAfford}: Multi-Scale Voxel-Token Fusion
+               for Open-Vocabulary {3D} Affordance Detection},
+  author    = {Sun, Haowen and Zhang, Shaolong and Li, Mingyang
+               and Ma, Chengzhong and Chen, Xinzhe and Cui, Qiongjie
+               and Chen, Xingyu and Liu, Zeyang and Lan, Xuguang},
+  booktitle = {Conference on Robot Learning},
+  year      = {2026}
+}</code></pre>
+      <span class="sr-only" id="copy-status" role="status" aria-live="polite"></span>
+    </section>
+  </main>
+
+  <footer>
+    <p>CoRL 2026 · Xi'an Jiaotong University</p>
+    <p>* Corresponding authors:
+      <a href="mailto:zeyang.liu@xjtu.edu.cn">Zeyang Liu</a>,
+      <a href="mailto:xglan@mail.xjtu.edu.cn">Xuguang Lan</a>
+    </p>
+  </footer>
+
+  <dialog id="figure-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-heading">
+      <h2 id="dialog-title">Figure</h2>
+      <button class="button" type="button" id="close-dialog" aria-label="Close figure">Close</button>
+    </div>
+    <img id="dialog-image" src="assets/framework.webp" alt="">
+  </dialog>
+</body>
+</html>
